@@ -1,4 +1,4 @@
-interface Camera {
+export interface Camera {
   start(): Promise<MediaStream>;
   stop(): void;
   setTorch(value: boolean): void;

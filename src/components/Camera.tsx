@@ -1,56 +1,66 @@
-import { useLayoutEffect, useRef } from "react";
-import { Camera as xCamera } from "~/logic/camera";
+import {
+  forwardRef,
+  useImperativeHandle,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { assert } from "~/util/assert";
 import * as logger from "~/util/logger";
 
 export interface CameraProps {
-  width: number;
-  height: number;
+  mediaStream: MediaStream;
 }
 
-export function Camera(props: CameraProps) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const cameraRef = useRef(
-    xCamera({
-      torch: false,
-      constraints: {
-        video: {
-          facingMode: "environment",
-          width: { ideal: props.width },
-          height: { ideal: props.height },
-        },
-      },
-    }),
-  );
+export const Camera = forwardRef<HTMLVideoElement, CameraProps>(function Camera(
+  { mediaStream },
+  ref,
+) {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [disabled, setDisabled] = useState(false);
+
+  useImperativeHandle(ref, () => {
+    assert(videoRef.current);
+    return videoRef.current;
+  });
 
   useLayoutEffect(() => {
-    async function initialize() {
-      let stream: MediaStream;
-      try {
-        stream = await cameraRef.current.start();
-      } catch (error) {
-        // No permission to access camera
-        assert(error instanceof Error);
-        logger.error(error.toString());
-        return;
-      }
+    const video = videoRef.current;
+    if (!video) {
+      return;
+    }
 
-      const video = videoRef.current;
-      assert(video);
-
+    async function initialize(video: HTMLVideoElement) {
       try {
-        video.srcObject = stream;
+        video.srcObject = mediaStream;
         video.setAttribute("playsinline", "true");
         await video.play();
+        setDisabled(false);
       } catch (error) {
         // User refused
         assert(error instanceof Error);
         logger.error(error.toString());
+        setDisabled(true);
       }
     }
 
-    initialize();
-  });
+    initialize(video);
 
-  return <video ref={videoRef}></video>;
-}
+    return () => video.pause();
+  }, [mediaStream]);
+
+  return (
+    <div className={`w-full h-full ${disabled ? "bg-black" : ""}`}>
+      <video
+        ref={videoRef}
+        className={`bg-black w-full h-full ${disabled ? "hidden" : ""}`}
+      />
+
+      {disabled && (
+        <p className="text-white flex items-center justify-center h-full">
+          Camera has been disabled.
+        </p>
+      )}
+    </div>
+  );
+});

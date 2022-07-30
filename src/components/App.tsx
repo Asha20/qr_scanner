@@ -19,19 +19,21 @@ export function App() {
     }),
   );
 
-  const media = useAsyncConst(camera.start);
+  function updateTorch(torch: boolean) {
+    camera.setTorch(torch);
+  }
+
+  const { value: media, error: mediaError } = useAsyncConst(camera.start);
 
   useEffect(() => {
-    if (media.state === "rejected") {
-      logger.error(media.error);
+    if (mediaError) {
+      logger.error(mediaError);
     }
-  }, [media]);
+  }, [mediaError]);
 
   return (
     <div className="w-screen h-screen">
-      {media.state === "resolved" && (
-        <Camera ref={videoRef} mediaStream={media.value} />
-      )}
+      <Camera ref={videoRef} mediaStream={media} onUpdateTorch={updateTorch} />
     </div>
   );
 }

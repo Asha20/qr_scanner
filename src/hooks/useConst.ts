@@ -16,7 +16,7 @@ type MaybeAsync<T> =
   | { state: "resolved"; value: T }
   | { state: "rejected"; error: unknown };
 
-export function useAsyncConst<T>(fn: () => Promise<T>): MaybeAsync<T> {
+export function useAsyncConst<T>(fn: () => Promise<T>) {
   const [state, setState] = useState<MaybeAsync<T>>({ state: "pending" });
   const cb = useRef(fn);
 
@@ -30,5 +30,9 @@ export function useAsyncConst<T>(fn: () => Promise<T>): MaybeAsync<T> {
       });
   }, [cb]);
 
-  return state;
+  return {
+    state: state.state,
+    value: state.state === "resolved" ? state.value : undefined,
+    error: state.state === "rejected" ? state.error : undefined,
+  };
 }

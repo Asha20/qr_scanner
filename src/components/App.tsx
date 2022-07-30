@@ -6,7 +6,7 @@ import { Camera as xCamera } from "~/logic/camera";
 import * as QrScanner from "~/logic/qr_scanner";
 import * as logger from "~/util/logger";
 
-const SCAN_ATTEMPTS_PER_SECOND = 2;
+const SCAN_ATTEMPTS_PER_SECOND = 10;
 
 export function App() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -15,8 +15,8 @@ export function App() {
       constraints: {
         video: {
           facingMode: "environment",
-          width: { ideal: 1280, min: 720 },
-          height: { ideal: 720, min: 480 },
+          width: { ideal: 720 },
+          height: { ideal: 480 },
         },
       },
       torch: false,

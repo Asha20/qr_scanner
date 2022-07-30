@@ -1,7 +1,7 @@
 export interface Camera {
-  start(): Promise<MediaStream>;
+  start(): Promise<{ media: MediaStream; supportsTorch: boolean }>;
   stop(): void;
-  setTorch(value: boolean): void;
+  setTorch(value: ConstrainBoolean): boolean;
 
   readonly active: boolean;
   readonly stream: MediaStream | null;
@@ -9,46 +9,65 @@ export interface Camera {
 
 interface State {
   stream: MediaStream | null;
-  torch: boolean;
+  torch: ConstrainBoolean;
 }
 
-interface CameraConfig {
-  torch: boolean;
-  constraints: MediaStreamConstraints;
+// The torch property seems to be missing, so add it manually.
+declare global {
+  interface MediaTrackCapabilities {
+    torch?: boolean;
+  }
+
+  interface MediaTrackConstraintSet {
+    torch?: ConstrainBoolean;
+  }
 }
 
-export function Camera(config: CameraConfig): Camera {
+export function Camera(constraints: MediaTrackConstraints): Camera {
   const state: State = {
     stream: null,
-    torch: config.torch,
+    torch: constraints.torch ?? false,
   };
 
-  function setTorchConstraint(value: boolean) {
+  let supportsTorch: boolean;
+
+  function setTorchConstraint(value: ConstrainBoolean): boolean {
     if (!state.stream) {
-      return;
+      return false;
     }
 
     const track = state.stream.getVideoTracks()[0];
-    // WHY: MediaTrackConstraintSet doesn't include the `torch` property.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    track.applyConstraints({ advanced: [{ torch: value } as any] });
+
+    // No support for getCapabilities in Firefox yet:
+    // https://caniuse.com/mdn-api_mediastreamtrack_getcapabilities
+    if (typeof track.getCapabilities === "function") {
+      const capabilities = track.getCapabilities();
+      if (!capabilities.torch) {
+        return false;
+      }
+    }
+
+    try {
+      track.applyConstraints({ advanced: [{ torch: value }] });
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   return {
     async start() {
       if (state.stream) {
-        return state.stream;
+        return { media: state.stream, supportsTorch };
       }
 
-      state.stream = await navigator.mediaDevices.getUserMedia(
-        config.constraints,
-      );
+      state.stream = await navigator.mediaDevices.getUserMedia({
+        video: constraints,
+      });
 
-      if (state.torch) {
-        setTorchConstraint(state.torch);
-      }
+      supportsTorch = setTorchConstraint(false);
 
-      return state.stream;
+      return { media: state.stream, supportsTorch };
     },
 
     stop() {
@@ -65,7 +84,7 @@ export function Camera(config: CameraConfig): Camera {
 
     setTorch(value) {
       state.torch = value;
-      setTorchConstraint(state.torch);
+      return setTorchConstraint(state.torch);
     },
 
     get active() {

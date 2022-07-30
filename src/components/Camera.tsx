@@ -10,19 +10,21 @@ import {
 import { assert } from "~/util/assert";
 import * as logger from "~/util/logger";
 
+type Torch = { active: boolean; onChange: (value: boolean) => void };
+
 export interface CameraProps {
   mediaStream?: MediaStream;
-  onUpdateTorch(torch: boolean): void;
+
+  torch: Torch | null;
 }
 
 type VideoState = "none" | "loading" | "playing";
 
 export const Camera = forwardRef<HTMLVideoElement, CameraProps>(function Camera(
-  { mediaStream, onUpdateTorch },
+  { mediaStream, torch },
   ref,
 ) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [torch, setTorch] = useState(false);
   const [playing, setPlaying] = useState(false);
   const state = useRef<VideoState>("none");
 
@@ -75,14 +77,9 @@ export const Camera = forwardRef<HTMLVideoElement, CameraProps>(function Camera(
     };
   }, [mediaStream]);
 
-  const LightningBoltIcon = torch
+  const LightningBoltIcon = torch?.active
     ? LightningBoltIconSolid
     : LightningBoltIconOutline;
-
-  function toggleTorch() {
-    setTorch(x => !x);
-    onUpdateTorch(!torch);
-  }
 
   const hideVideo = !playing || Boolean(!mediaStream);
 
@@ -101,9 +98,11 @@ export const Camera = forwardRef<HTMLVideoElement, CameraProps>(function Camera(
       />
 
       <div className="controls absolute top-0 left-0 right-0 p-2 bg-gradient-to-b from-black">
-        <button onClick={toggleTorch}>
-          <LightningBoltIcon className="w-12 h-12 p-2 text-white" />
-        </button>
+        {torch && (
+          <button onClick={() => torch.onChange(!torch.active)}>
+            <LightningBoltIcon className="w-12 h-12 p-2 text-white" />
+          </button>
+        )}
       </div>
     </div>
   );

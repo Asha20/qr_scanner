@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Camera } from "~/components/Camera";
 import { useAsyncConst, useConst } from "~/hooks/useConst";
 import { useInterval } from "~/hooks/useInterval";
@@ -10,25 +10,22 @@ const SCAN_ATTEMPTS_PER_SECOND = 10;
 
 export function App() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [torch, setTorch] = useState(false);
   const camera = useConst(() =>
     xCamera({
-      constraints: {
-        video: {
-          facingMode: "environment",
-          width: { ideal: 720 },
-          height: { ideal: 480 },
-        },
-      },
-      torch: false,
+      facingMode: "environment",
+      width: { ideal: 720 },
+      height: { ideal: 480 },
     }),
   );
 
-  const { value: media, error: mediaError } = useAsyncConst(camera.start);
+  const { value: cameraStart, error: mediaError } = useAsyncConst(camera.start);
 
   const scanning = useRef(false);
 
-  function updateTorch(torch: boolean) {
-    camera.setTorch(torch);
+  function updateTorch(value: boolean) {
+    setTorch(value);
+    camera.setTorch(value);
   }
 
   async function attemptScan() {
@@ -54,7 +51,15 @@ export function App() {
 
   return (
     <div className="w-screen h-screen">
-      <Camera ref={videoRef} mediaStream={media} onUpdateTorch={updateTorch} />
+      <Camera
+        ref={videoRef}
+        mediaStream={cameraStart?.media}
+        torch={
+          cameraStart?.supportsTorch
+            ? { active: torch, onChange: updateTorch }
+            : null
+        }
+      />
     </div>
   );
 }

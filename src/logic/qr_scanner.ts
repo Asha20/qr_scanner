@@ -16,7 +16,13 @@ const qrWorker = new QrScannerWorker();
 
 function waitMessage(worker: Worker) {
   return new Promise(resolve => {
-    worker.addEventListener("message", resolve, { once: true });
+    worker.addEventListener(
+      "message",
+      e => {
+        resolve(e.data);
+      },
+      { once: true },
+    );
   });
 }
 

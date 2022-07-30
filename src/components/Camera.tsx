@@ -39,8 +39,6 @@ export const Camera = forwardRef<HTMLVideoElement, CameraProps>(function Camera(
     }
 
     async function initialize(video: HTMLVideoElement) {
-      console.info("init", mediaStream, state.current);
-
       if (state.current === "playing") {
         video.pause();
         state.current = "none";
@@ -68,7 +66,6 @@ export const Camera = forwardRef<HTMLVideoElement, CameraProps>(function Camera(
     initialize(video);
 
     return () => {
-      console.info("delet", mediaStream, state.current);
       if (state.current === "playing") {
         video.pause();
         state.current = "none";

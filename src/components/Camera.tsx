@@ -2,7 +2,6 @@ import { LightningBoltIcon as LightningBoltIconOutline } from "@heroicons/react/
 import { LightningBoltIcon as LightningBoltIconSolid } from "@heroicons/react/solid";
 import {
   forwardRef,
-  useEffect,
   useImperativeHandle,
   useLayoutEffect,
   useRef,
@@ -42,6 +41,7 @@ export const Camera = forwardRef<HTMLVideoElement, CameraProps>(function Camera(
       if (state.current === "playing") {
         video.pause();
         state.current = "none";
+        setPlaying(false);
       }
 
       if (!mediaStream) {
@@ -54,11 +54,13 @@ export const Camera = forwardRef<HTMLVideoElement, CameraProps>(function Camera(
           video.srcObject = mediaStream;
           await video.play();
           state.current = "playing";
+          setPlaying(true);
         } catch (error) {
           // User refused
           assert(error instanceof Error);
           logger.error(error.toString());
           state.current = "none";
+          setPlaying(false);
         }
       }
     }
@@ -72,11 +74,6 @@ export const Camera = forwardRef<HTMLVideoElement, CameraProps>(function Camera(
       }
     };
   }, [mediaStream]);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    setPlaying(state.current === "playing");
-  });
 
   const LightningBoltIcon = torch
     ? LightningBoltIconSolid

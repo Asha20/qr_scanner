@@ -50,11 +50,16 @@ export interface QrScanner {
   scanVideo(video: HTMLVideoElement): ScanResult;
 }
 
+let pending: Promise<ZXing.Instance>;
 let zxing: ZXing.Instance;
 
 export async function init(): Promise<QrScanner> {
+  if (!pending) {
+    pending = ZXing();
+  }
+
   if (!zxing) {
-    zxing = await ZXing();
+    zxing = await pending;
   }
 
   const canvas = document.createElement("canvas");

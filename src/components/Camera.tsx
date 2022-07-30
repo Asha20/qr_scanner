@@ -70,7 +70,7 @@ export const Camera = forwardRef<HTMLVideoElement, CameraProps>(function Camera(
   return (
     <div className={`w-full h-full relative ${disabled ? "bg-black" : ""}`}>
       {disabled && (
-        <p className="flex items-center justify-center text-white h-full">
+        <p className="flex items-center justify-center text-white h-full select-none">
           Camera has been disabled.
         </p>
       )}

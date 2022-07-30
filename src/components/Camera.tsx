@@ -2,6 +2,7 @@ import { LightningBoltIcon as LightningBoltIconOutline } from "@heroicons/react/
 import { LightningBoltIcon as LightningBoltIconSolid } from "@heroicons/react/solid";
 import {
   forwardRef,
+  useEffect,
   useImperativeHandle,
   useLayoutEffect,
   useRef,
@@ -15,13 +16,16 @@ export interface CameraProps {
   onUpdateTorch(torch: boolean): void;
 }
 
+type VideoState = "none" | "loading" | "playing";
+
 export const Camera = forwardRef<HTMLVideoElement, CameraProps>(function Camera(
   { mediaStream, onUpdateTorch },
   ref,
 ) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [disabled, setDisabled] = useState(false);
   const [torch, setTorch] = useState(false);
+  const [playing, setPlaying] = useState(false);
+  const state = useRef<VideoState>("none");
 
   useImperativeHandle(ref, () => {
     assert(videoRef.current);
@@ -35,28 +39,47 @@ export const Camera = forwardRef<HTMLVideoElement, CameraProps>(function Camera(
     }
 
     async function initialize(video: HTMLVideoElement) {
+      console.info("init", mediaStream, state.current);
+
+      if (state.current === "playing") {
+        video.pause();
+        state.current = "none";
+      }
+
       if (!mediaStream) {
-        setDisabled(true);
         return;
       }
 
-      try {
-        video.srcObject = mediaStream;
-        video.setAttribute("playsinline", "true");
-        await video.play();
-        setDisabled(false);
-      } catch (error) {
-        // User refused
-        assert(error instanceof Error);
-        logger.error(error.toString());
-        setDisabled(true);
+      if (state.current !== "loading") {
+        try {
+          state.current = "loading";
+          video.srcObject = mediaStream;
+          await video.play();
+          state.current = "playing";
+        } catch (error) {
+          // User refused
+          assert(error instanceof Error);
+          logger.error(error.toString());
+          state.current = "none";
+        }
       }
     }
 
     initialize(video);
 
-    return () => video.pause();
+    return () => {
+      console.info("delet", mediaStream, state.current);
+      if (state.current === "playing") {
+        video.pause();
+        state.current = "none";
+      }
+    };
   }, [mediaStream]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    setPlaying(state.current === "playing");
+  });
 
   const LightningBoltIcon = torch
     ? LightningBoltIconSolid
@@ -67,22 +90,25 @@ export const Camera = forwardRef<HTMLVideoElement, CameraProps>(function Camera(
     onUpdateTorch(!torch);
   }
 
+  const hideVideo = !playing || Boolean(!mediaStream);
+
   return (
-    <div className={`w-full h-full relative ${disabled ? "bg-black" : ""}`}>
-      {disabled && (
+    <div className={`w-full h-full relative ${hideVideo ? "bg-black" : ""}`}>
+      {hideVideo && (
         <p className="flex items-center justify-center text-white h-full select-none">
-          Camera has been disabled.
+          {!mediaStream ? "No media stream." : "Not playing."}
         </p>
       )}
 
       <video
         ref={videoRef}
-        className={`bg-black w-full h-full ${disabled ? "hidden" : ""}`}
+        className={`bg-black w-full h-full ${hideVideo ? "hidden" : ""}`}
+        playsInline={true}
       />
 
-      <div className="controls absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black">
+      <div className="controls absolute top-0 left-0 right-0 p-2 bg-gradient-to-b from-black">
         <button onClick={toggleTorch}>
-          <LightningBoltIcon className="w-8 h-8 text-white" />
+          <LightningBoltIcon className="w-12 h-12 p-2 text-white" />
         </button>
       </div>
     </div>

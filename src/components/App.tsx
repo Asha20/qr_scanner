@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useReducer, useRef } from "react";
 import { Camera } from "~/components/Camera";
 import { useAsyncConst, useConst } from "~/hooks/useConst";
 import { useInterval } from "~/hooks/useInterval";
@@ -23,22 +23,27 @@ export function App() {
     }),
   );
 
-  const { value: qrScanner } = useAsyncConst(QrScanner.init);
   const { value: media, error: mediaError } = useAsyncConst(camera.start);
+
+  const [cnt, incCnt] = useReducer(x => x + 1, 0);
+  const scanning = useRef(false);
 
   function updateTorch(torch: boolean) {
     camera.setTorch(torch);
   }
 
-  function attemptScan() {
-    if (!videoRef.current || !qrScanner) {
+  async function attemptScan() {
+    if (!videoRef.current || scanning.current) {
       return;
     }
 
-    const result = qrScanner.scanVideo(videoRef.current);
+    scanning.current = true;
+    incCnt();
+    const result = await QrScanner.scanVideo(videoRef.current);
     if (result.success) {
       alert(result.value);
     }
+    scanning.current = false;
   }
 
   useInterval(attemptScan, 1000 / SCAN_ATTEMPTS_PER_SECOND);
@@ -52,6 +57,8 @@ export function App() {
   return (
     <div className="w-screen h-screen">
       <Camera ref={videoRef} mediaStream={media} onUpdateTorch={updateTorch} />
+
+      <p className="text-xl text-white fixed bottom-0 left-0">{cnt}</p>
     </div>
   );
 }

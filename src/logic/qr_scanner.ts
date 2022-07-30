@@ -26,14 +26,18 @@ function waitMessage(worker: Worker) {
   });
 }
 
+let prevVideo: HTMLVideoElement;
+
 export async function scanVideo(video: HTMLVideoElement): Promise<ScanResult> {
   if (video.readyState !== HTMLMediaElement.HAVE_ENOUGH_DATA) {
     return { success: false };
   }
 
   assert(ctx);
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
+  if (video !== prevVideo) {
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+  }
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
@@ -46,5 +50,6 @@ export async function scanVideo(video: HTMLVideoElement): Promise<ScanResult> {
   qrWorker.postMessage(request, [imageData.data.buffer]);
   const reply = (await waitMessage(qrWorker)) as ScanResult;
 
+  prevVideo = video;
   return reply;
 }

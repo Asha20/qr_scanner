@@ -25,10 +25,24 @@ async function init(): Promise<ZXing.Instance> {
   return zxing;
 }
 
+const bufferCache: { size: number; buffer: number | null } = {
+  size: 0,
+  buffer: null,
+};
+
 function scan(zxing: ZXing.Instance, imageData: ImageData): ScanResult {
   const sourceBuffer = imageData.data;
 
-  const buffer = zxing._malloc(sourceBuffer.byteLength);
+  if (bufferCache.buffer === null) {
+    bufferCache.size = sourceBuffer.byteLength;
+    bufferCache.buffer = zxing._malloc(sourceBuffer.byteLength);
+  } else if (sourceBuffer.byteLength !== bufferCache.size) {
+    zxing._free(bufferCache.buffer);
+    bufferCache.size = sourceBuffer.byteLength;
+    bufferCache.buffer = zxing._malloc(sourceBuffer.byteLength);
+  }
+
+  const buffer = bufferCache.buffer;
   zxing.HEAPU8.set(sourceBuffer, buffer);
 
   const result = zxing.readBarcodeFromPixmap(
@@ -38,7 +52,6 @@ function scan(zxing: ZXing.Instance, imageData: ImageData): ScanResult {
     true,
     "QR_CODE",
   );
-  zxing._free(buffer);
 
   if (result.format === "QRCode") {
     return { success: true, value: result.text };

@@ -1,5 +1,3 @@
-import { LightningBoltIcon as LightningBoltIconOutline } from "@heroicons/react/outline";
-import { LightningBoltIcon as LightningBoltIconSolid } from "@heroicons/react/solid";
 import {
   forwardRef,
   useImperativeHandle,
@@ -10,12 +8,9 @@ import {
 import { assert } from "~/util/assert";
 import * as logger from "~/util/logger";
 
-export type Torch = { active: boolean; onChange: (value: boolean) => void };
-
 export interface MediaStreamPlayerProps {
   active?: boolean;
   mediaStream: MediaStream | undefined;
-  torch: Torch | undefined;
 }
 
 type VideoState = "none" | "loading" | "playing";
@@ -23,7 +18,7 @@ type VideoState = "none" | "loading" | "playing";
 export const MediaStreamPlayer = forwardRef<
   HTMLVideoElement,
   MediaStreamPlayerProps
->(({ active = true, mediaStream, torch }, ref) => {
+>(({ active = true, mediaStream }, ref) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [playing, setPlaying] = useState(false);
   const state = useRef<VideoState>("none");
@@ -77,10 +72,6 @@ export const MediaStreamPlayer = forwardRef<
     };
   }, [mediaStream]);
 
-  const LightningBoltIcon = torch?.active
-    ? LightningBoltIconSolid
-    : LightningBoltIconOutline;
-
   const hideVideo = !active || !playing || Boolean(!mediaStream);
 
   return (
@@ -96,14 +87,6 @@ export const MediaStreamPlayer = forwardRef<
         className={`w-full ${hideVideo ? "invisible" : ""}`}
         playsInline={true}
       />
-
-      <div className="controls absolute top-0 left-0 right-0 p-2 bg-gradient-to-b from-black">
-        {torch && (
-          <button onClick={() => torch.onChange(!torch.active)}>
-            <LightningBoltIcon className="w-12 h-12 p-2 text-white" />
-          </button>
-        )}
-      </div>
     </div>
   );
 });

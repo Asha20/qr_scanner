@@ -8,15 +8,16 @@ const SCAN_ATTEMPTS_PER_SECOND = 10;
 export interface QrScannerProps {
   media: MediaStream | undefined;
   torch: Torch | undefined;
+  scan: boolean;
   onScan(result: xQrScanner.ScanResult): void;
 }
 
-export function QrScanner({ media, torch, onScan }: QrScannerProps) {
+export function QrScanner({ media, torch, scan, onScan }: QrScannerProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const scanning = useRef(false);
 
   async function attemptScan() {
-    if (!videoRef.current || scanning.current) {
+    if (!scan || !videoRef.current || scanning.current) {
       return;
     }
 

@@ -1,17 +1,3 @@
-export interface Camera {
-  start(): Promise<{ media: MediaStream; supportsTorch: boolean }>;
-  stop(): void;
-  setTorch(value: ConstrainBoolean): boolean;
-
-  readonly active: boolean;
-  readonly stream: MediaStream | null;
-}
-
-interface State {
-  stream: MediaStream | null;
-  torch: ConstrainBoolean;
-}
-
 // The torch property seems to be missing, so add it manually.
 declare global {
   interface MediaTrackCapabilities {
@@ -23,20 +9,24 @@ declare global {
   }
 }
 
-export function Camera(constraints: MediaTrackConstraints): Camera {
-  const state: State = {
-    stream: null,
-    torch: constraints.torch ?? false,
-  };
+interface CameraStream {
+  setTorch(value: ConstrainBoolean): boolean;
+  stop(): void;
+  readonly supportsTorch: boolean;
+  readonly mediaStream: MediaStream;
+}
 
-  let supportsTorch: boolean;
+export async function Camera(
+  constraints: MediaTrackConstraints,
+): Promise<CameraStream> {
+  const mediaStream = await navigator.mediaDevices.getUserMedia({
+    video: constraints,
+  });
 
-  function setTorchConstraint(value: ConstrainBoolean): boolean {
-    if (!state.stream) {
-      return false;
-    }
+  const supportsTorch = setTorch(false);
 
-    const track = state.stream.getVideoTracks()[0];
+  function setTorch(value: ConstrainBoolean): boolean {
+    const track = mediaStream.getVideoTracks()[0];
 
     // No support for getCapabilities in Firefox yet:
     // https://caniuse.com/mdn-api_mediastreamtrack_getcapabilities
@@ -55,44 +45,20 @@ export function Camera(constraints: MediaTrackConstraints): Camera {
     }
   }
 
+  function stop() {
+    for (const track of mediaStream.getTracks()) {
+      track.stop();
+    }
+  }
+
   return {
-    async start() {
-      if (state.stream) {
-        return { media: state.stream, supportsTorch };
-      }
-
-      state.stream = await navigator.mediaDevices.getUserMedia({
-        video: constraints,
-      });
-
-      supportsTorch = setTorchConstraint(false);
-
-      return { media: state.stream, supportsTorch };
+    setTorch,
+    stop,
+    get supportsTorch() {
+      return supportsTorch;
     },
-
-    stop() {
-      if (!state.stream) {
-        return;
-      }
-
-      state.stream.getTracks().forEach(track => {
-        track.stop();
-      });
-
-      state.stream = null;
-    },
-
-    setTorch(value) {
-      state.torch = value;
-      return setTorchConstraint(state.torch);
-    },
-
-    get active() {
-      return Boolean(state.stream);
-    },
-
-    get stream() {
-      return state.stream;
+    get mediaStream() {
+      return mediaStream;
     },
   };
 }

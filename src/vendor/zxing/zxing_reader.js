@@ -2,7 +2,7 @@
 var ZXing = (function() {
   var _scriptDir = typeof document !== 'undefined' && document.currentScript ? document.currentScript.src : undefined;
 
-  var WASM_FILE_NAME = "/zxing/zxing_reader.wasm";
+  var WASM_FILE_NAME = import.meta.env.BASE_URL + "zxing/zxing_reader.wasm";
   
   return (
 function(ZXing) {

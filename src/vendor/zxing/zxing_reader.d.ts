@@ -4,7 +4,29 @@ declare module "~/vendor/zxing/zxing_reader" {
   export namespace ZXing {
     type BufferId = number;
     type Buffer = Uint8ClampedArray;
-    type Format = "QR_CODE";
+
+    interface FormatMap {
+      AZTEC: "Aztec";
+      CODABAR: "Codabar";
+      CODE_39: "Code39";
+      CODE_93: "Code93";
+      CODE_128: "Code128";
+      DATA_MATRIX: "DataMatrix";
+      EAN_8: "EAN-8";
+      EAN_13: "EAN-13";
+      ITF: "ITF";
+      MAXICODE: "MaxiCode";
+      PDF_417: "PDF417";
+      QR_CODE: "QRCode";
+      MICRO_QR_CODE: "MicroQRCode";
+      DATA_BAR: "DataBar";
+      DATA_BAR_EXPANDED: "DataBarExpanded";
+      UPC_A: "UPC-A";
+      UPC_E: "UPC-E";
+    }
+
+    type Format = keyof FormatMap & string;
+    type FormatName = FormatMap[Format];
 
     export interface Point {
       x: number;
@@ -12,7 +34,7 @@ declare module "~/vendor/zxing/zxing_reader" {
     }
 
     export interface ScanResult {
-      format: "" | "QRCode";
+      format: "" | FormatName;
       text: string;
       error: string;
       position: {
@@ -25,13 +47,13 @@ declare module "~/vendor/zxing/zxing_reader" {
 
     export interface Instance {
       _malloc(byteLength: number): BufferId;
-      _free(buffer: BufferId): void;
+      _free(bufferId: BufferId): void;
 
       readBarcodeFromPixmap(
-        buffer: BufferId,
+        bufferId: BufferId,
         width: number,
         height: number,
-        something: boolean,
+        tryHarder: boolean,
         format: Format,
       ): ScanResult;
 

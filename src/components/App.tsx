@@ -1,65 +1,55 @@
-import { useEffect, useRef, useState } from "react";
-import { Camera } from "~/components/Camera";
+import { useState } from "react";
+import { QrScanner } from "~/components/QrScanner";
 import { useAsyncConst, useConst } from "~/hooks/useConst";
-import { useInterval } from "~/hooks/useInterval";
-import { Camera as xCamera } from "~/logic/camera";
-import * as QrScanner from "~/logic/qr_scanner";
-import * as logger from "~/util/logger";
-
-const SCAN_ATTEMPTS_PER_SECOND = 10;
+import { Camera } from "~/logic/camera";
+import { ScanResult } from "~/logic/qr_scanner";
 
 export function App() {
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [torch, setTorch] = useState(false);
   const camera = useConst(() =>
-    xCamera({
+    Camera({
       facingMode: "environment",
       width: { ideal: 720 },
       height: { ideal: 480 },
     }),
   );
 
-  const { value: cameraStart, error: mediaError } = useAsyncConst(camera.start);
+  const { value: camFeed } = useAsyncConst(camera.start);
 
-  const scanning = useRef(false);
+  const [torch, setTorch] = useState(false);
 
   function updateTorch(value: boolean) {
     setTorch(value);
     camera.setTorch(value);
   }
 
-  async function attemptScan() {
-    if (!videoRef.current || scanning.current) {
-      return;
-    }
-
-    scanning.current = true;
-    const result = await QrScanner.scanVideo(videoRef.current);
-    if (result.success) {
-      alert(result.value);
-    }
-    scanning.current = false;
+  function onScan(result: ScanResult) {
+    console.log({ result });
   }
 
-  useInterval(attemptScan, 1000 / SCAN_ATTEMPTS_PER_SECOND);
-
-  useEffect(() => {
-    if (mediaError) {
-      logger.error(mediaError);
-    }
-  }, [mediaError]);
-
   return (
-    <div className="w-screen h-screen">
-      <Camera
-        ref={videoRef}
-        mediaStream={cameraStart?.media}
-        torch={
-          cameraStart?.supportsTorch
-            ? { active: torch, onChange: updateTorch }
-            : null
-        }
-      />
+    <div className="w-screen h-screen flex">
+      <div className="bg-red-300 flex-auto">
+        <QrScanner
+          media={camFeed?.media}
+          torch={
+            camFeed?.supportsTorch
+              ? { active: torch, onChange: updateTorch }
+              : undefined
+          }
+          onScan={onScan}
+        />
+      </div>
+      <div className="bg-blue-300 flex-auto">
+        <QrScanner
+          media={camFeed?.media}
+          torch={
+            camFeed?.supportsTorch
+              ? { active: torch, onChange: updateTorch }
+              : undefined
+          }
+          onScan={onScan}
+        />
+      </div>
     </div>
   );
 }

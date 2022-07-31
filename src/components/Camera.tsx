@@ -10,12 +10,11 @@ import {
 import { assert } from "~/util/assert";
 import * as logger from "~/util/logger";
 
-type Torch = { active: boolean; onChange: (value: boolean) => void };
+export type Torch = { active: boolean; onChange: (value: boolean) => void };
 
 export interface CameraProps {
-  mediaStream?: MediaStream;
-
-  torch: Torch | null;
+  mediaStream: MediaStream | undefined;
+  torch: Torch | undefined;
 }
 
 type VideoState = "none" | "loading" | "playing";

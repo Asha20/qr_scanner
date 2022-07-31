@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { QrScanner, ScanResult } from "~/components/QrScanner/index";
+import { Result } from "~/components/Result";
 import { useAsyncConst } from "~/hooks/useConst";
 import { Camera } from "~/logic/camera";
 
@@ -9,12 +10,12 @@ export function App() {
   const { value: camera } = useAsyncConst(() =>
     Camera({
       facingMode: "environment",
-      width: { ideal: 720 },
-      height: { ideal: 480 },
+      width: { min: 720, ideal: 1280 },
+      height: { min: 480, ideal: 720 },
     }),
   );
 
-  const [scanning, setScanning] = useState(false);
+  const [scanning, setScanning] = useState(true);
   const [torch, setTorch] = useState(false);
   const [text, setText] = useState("");
 
@@ -33,8 +34,28 @@ export function App() {
     }
   }
 
+  function scanAnother() {
+    setText("");
+    setScanning(true);
+  }
+
   return (
-    <div className="w-screen h-screen relative">
+    <div className="w-screen h-screen bg-black overflow-hidden relative">
+      {!scanning && (
+        <div className="absolute w-full h-full p-8 flex flex-col justify-end items-center bg-black/80 gap-4 z-10 select-none">
+          <p className="w-full truncate text-white text-center text-lg">
+            <Result value={text} />
+          </p>
+
+          <button
+            className="text-white bg-blue-300 px-8 py-4 rounded text-xl"
+            onClick={scanAnother}
+          >
+            Scan another
+          </button>
+        </div>
+      )}
+
       <QrScanner
         scan={scanning}
         onScan={onScan}
@@ -46,12 +67,6 @@ export function App() {
             : undefined
         }
       />
-      <div className="absolute bottom-0 left-0 right-0 text-center text-white p-4">
-        <p>
-          {text ? "Found code:" : scanning ? "Searching..." : "Not searching."}
-        </p>
-        <p className="min-h-[1.5rem] truncate">{text}</p>
-      </div>
     </div>
   );
 }

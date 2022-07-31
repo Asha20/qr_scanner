@@ -4,6 +4,7 @@ import { useInterval } from "~/hooks/useInterval";
 import * as xQrScanner from "./qr_scanner";
 
 export interface QrScannerProps {
+  showVideo?: boolean;
   media: MediaStream | undefined;
   torch: Torch | undefined;
   scan: boolean;
@@ -12,6 +13,7 @@ export interface QrScannerProps {
 }
 
 export function QrScanner({
+  showVideo,
   media,
   torch,
   scan,
@@ -34,5 +36,12 @@ export function QrScanner({
 
   useInterval(attemptScan, scan ? 1000 / attemptsPerSecond : null);
 
-  return <MediaStreamPlayer ref={videoRef} mediaStream={media} torch={torch} />;
+  return (
+    <MediaStreamPlayer
+      active={showVideo}
+      ref={videoRef}
+      mediaStream={media}
+      torch={torch}
+    />
+  );
 }

@@ -1,6 +1,6 @@
 /* eslint-env worker */
 
-import type { ProcessRequest, ScanResult } from "~/logic/qr_scanner";
+import type { ProcessRequest, ScanResult } from "./qr_scanner";
 import initZXing, { type ZXing } from "~/vendor/zxing/zxing_reader";
 
 type RequestMessage = ProcessRequest;

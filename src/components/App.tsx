@@ -83,7 +83,7 @@ export function App() {
   return (
     <div className="w-screen h-screen bg-black overflow-hidden relative">
       <QrScanner
-        scan={text !== ""}
+        scan={text === ""}
         onScan={onScan}
         attemptsPerSecond={SCAN_ATTEMPTS_PER_SECOND}
         media={camera?.mediaStream}

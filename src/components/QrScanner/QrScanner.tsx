@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { MediaStreamPlayer, Torch } from "~/components/MediaStreamPlayer";
 import { useInterval } from "~/hooks/useInterval";
-import * as xQrScanner from "~/logic/qr_scanner";
+import * as xQrScanner from "./qr_scanner";
 
 const SCAN_ATTEMPTS_PER_SECOND = 10;
 

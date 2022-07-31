@@ -1,5 +1,5 @@
-import QrScannerWorker from "~/logic/qr_scanner.worker?worker";
 import { assert } from "~/util/assert";
+import QrScannerWorker from "./qr_scanner.worker?worker";
 
 export interface ProcessRequest {
   buffer: ArrayBuffer;

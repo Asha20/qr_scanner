@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { QrScanner } from "~/components/QrScanner";
+import { QrScanner, ScanResult } from "~/components/QrScanner/index";
 import { useAsyncConst } from "~/hooks/useConst";
 import { Camera } from "~/logic/camera";
-import { ScanResult } from "~/logic/qr_scanner";
 
 export function App() {
   const { value: camera } = useAsyncConst(() =>

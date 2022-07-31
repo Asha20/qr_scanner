@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { Camera, Torch } from "~/components/Camera";
+import { MediaStreamPlayer, Torch } from "~/components/MediaStreamPlayer";
 import { useInterval } from "~/hooks/useInterval";
 import * as xQrScanner from "~/logic/qr_scanner";
 
@@ -29,5 +29,5 @@ export function QrScanner({ media, torch, scan, onScan }: QrScannerProps) {
 
   useInterval(attemptScan, 1000 / SCAN_ATTEMPTS_PER_SECOND);
 
-  return <Camera ref={videoRef} mediaStream={media} torch={torch} />;
+  return <MediaStreamPlayer ref={videoRef} mediaStream={media} torch={torch} />;
 }

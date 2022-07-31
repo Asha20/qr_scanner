@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-export function useInterval(fn: () => void, ms: number) {
+export function useInterval(fn: () => void, ms: number | null) {
   const cb = useRef<typeof fn>();
 
   useEffect(() => {
@@ -14,7 +14,9 @@ export function useInterval(fn: () => void, ms: number) {
       }
     }
 
-    const id = setInterval(tick, ms);
-    return () => clearInterval(id);
+    if (ms !== null) {
+      const id = setInterval(tick, ms);
+      return () => clearInterval(id);
+    }
   }, [ms]);
 }

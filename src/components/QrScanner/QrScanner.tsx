@@ -3,16 +3,21 @@ import { MediaStreamPlayer, Torch } from "~/components/MediaStreamPlayer";
 import { useInterval } from "~/hooks/useInterval";
 import * as xQrScanner from "./qr_scanner";
 
-const SCAN_ATTEMPTS_PER_SECOND = 10;
-
 export interface QrScannerProps {
   media: MediaStream | undefined;
   torch: Torch | undefined;
   scan: boolean;
+  attemptsPerSecond: number;
   onScan(result: xQrScanner.ScanResult): void;
 }
 
-export function QrScanner({ media, torch, scan, onScan }: QrScannerProps) {
+export function QrScanner({
+  media,
+  torch,
+  scan,
+  attemptsPerSecond,
+  onScan,
+}: QrScannerProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const scanning = useRef(false);
 
@@ -27,7 +32,7 @@ export function QrScanner({ media, torch, scan, onScan }: QrScannerProps) {
     scanning.current = false;
   }
 
-  useInterval(attemptScan, 1000 / SCAN_ATTEMPTS_PER_SECOND);
+  useInterval(attemptScan, scan ? 1000 / attemptsPerSecond : null);
 
   return <MediaStreamPlayer ref={videoRef} mediaStream={media} torch={torch} />;
 }

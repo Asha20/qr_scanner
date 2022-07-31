@@ -81,7 +81,11 @@ export const MediaStreamPlayer = forwardRef<HTMLVideoElement, CameraProps>(
     const hideVideo = !playing || Boolean(!mediaStream);
 
     return (
-      <div className={`w-full h-full relative ${hideVideo ? "bg-black" : ""}`}>
+      <div
+        className={`w-full h-full overflow-hidden relative ${
+          hideVideo ? "bg-black" : ""
+        }`}
+      >
         {hideVideo && (
           <p className="flex items-center justify-center text-white h-full select-none">
             {!mediaStream ? "No media stream." : "Not playing."}
@@ -90,7 +94,7 @@ export const MediaStreamPlayer = forwardRef<HTMLVideoElement, CameraProps>(
 
         <video
           ref={videoRef}
-          className={`bg-black w-full h-full ${hideVideo ? "hidden" : ""}`}
+          className={`w-full ${hideVideo ? "hidden" : ""}`}
           playsInline={true}
         />
 

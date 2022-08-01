@@ -26,7 +26,7 @@ function Overlay({ text, onScanAnother }: OverlayProps) {
       </p>
 
       <button
-        className="text-white bg-blue-300 px-8 py-4 rounded text-xl"
+        className="text-white bg-blue-400 px-8 py-4 rounded text-xl"
         onClick={onScanAnother}
       >
         Scan another
@@ -92,10 +92,13 @@ export function Scan() {
   );
 
   const [text, setText] = useState("");
-  const [torch, setTorch] = useStore(state => [state.torch, state.setTorch]);
+  const [torch, setTorch] = useStore(state => [
+    state.torch.value,
+    state.torch.set,
+  ]);
   const [scanHistory, addScan] = useStore(state => [
-    state.scanHistory,
-    state.addScan,
+    state.scan.history,
+    state.scan.add,
   ]);
 
   function onScan(result: ScanResult) {

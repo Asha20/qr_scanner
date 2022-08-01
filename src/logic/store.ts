@@ -9,29 +9,47 @@ export interface ScanEntry {
 }
 
 export interface State {
-  torch: boolean;
-  scanHistory: ScanEntry[];
-  addScan(scan: string): void;
-  setTorch(torch: boolean): void;
+  torch: {
+    value: boolean;
+    set(torch: boolean): void;
+  };
+
+  scan: {
+    history: ScanEntry[];
+    add(scan: string): void;
+    clear(): void;
+  };
 }
 
 export const useStore = create<State>(set => ({
-  torch: false,
-  scanHistory: [],
-
-  addScan(scan) {
-    set(
-      produce((state: State) => {
-        state.scanHistory.push({ created: Date.now(), value: scan });
-      }),
-    );
+  torch: {
+    value: false,
+    set(torch) {
+      set(
+        produce((state: State) => {
+          state.torch.value = torch;
+        }),
+      );
+    },
   },
 
-  setTorch(torch) {
-    set(
-      produce((state: State) => {
-        state.torch = torch;
-      }),
-    );
+  scan: {
+    history: [],
+
+    add(scan) {
+      set(
+        produce((state: State) => {
+          state.scan.history.push({ created: Date.now(), value: scan });
+        }),
+      );
+    },
+
+    clear() {
+      set(
+        produce((state: State) => {
+          state.scan.history = [];
+        }),
+      );
+    },
   },
 }));

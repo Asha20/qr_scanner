@@ -9,9 +9,19 @@ export interface ButtonProps
   kind: keyof typeof colorClasses;
 }
 
+export interface IconButtonProps extends ButtonProps {
+  className?: string;
+  icon: React.ReactElement;
+}
+
 export interface LinkButtonProps extends LinkProps {
   to: To;
   kind: keyof typeof colorClasses;
+}
+
+export interface LinkIconButtonProps extends LinkButtonProps {
+  className?: string;
+  icon: React.ReactElement;
 }
 
 const colorClasses = {
@@ -29,6 +39,23 @@ export function Button({ kind, className = "", ...props }: ButtonProps) {
   );
 }
 
+export function IconButton({
+  icon,
+  className = "",
+  children,
+  ...props
+}: IconButtonProps) {
+  return (
+    <Button
+      className={`flex justify-between items-center ${className}`}
+      {...props}
+    >
+      {icon}
+      <div className="flex-1">{children}</div>
+    </Button>
+  );
+}
+
 export function LinkButton({
   kind,
   className = "",
@@ -39,5 +66,22 @@ export function LinkButton({
       className={`text-white px-8 py-2 rounded text-xl text-center ${colorClasses[kind]} ${className}`}
       {...props}
     />
+  );
+}
+
+export function LinkIconButton({
+  icon,
+  className = "",
+  children,
+  ...props
+}: LinkIconButtonProps) {
+  return (
+    <LinkButton
+      className={`flex justify-between items-center ${className}`}
+      {...props}
+    >
+      {icon}
+      <div className="flex-1">{children}</div>
+    </LinkButton>
   );
 }

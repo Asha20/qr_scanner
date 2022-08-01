@@ -1,8 +1,6 @@
-import {
-  LightningBoltIcon as LightningBoltIconOutline,
-  ViewListIcon,
-} from "@heroicons/react/outline";
-import { LightningBoltIcon as LightningBoltIconSolid } from "@heroicons/react/solid";
+import LightningBoltIconOutline from "@heroicons/react/outline/LightningBoltIcon";
+import ViewListIcon from "@heroicons/react/outline/ViewListIcon";
+import LightningBoltIconSolid from "@heroicons/react/solid/LightningBoltIcon";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "~/components/Button";

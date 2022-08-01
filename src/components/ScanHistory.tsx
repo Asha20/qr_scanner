@@ -1,4 +1,4 @@
-import TrashIcon from "@heroicons/react/outline/TrashIcon";
+import TrashIcon from "@heroicons/react/solid/TrashIcon";
 import { DateTime } from "~/components/DateTime";
 import { Result } from "~/components/Result";
 import { ScanEntry } from "~/logic/store";

@@ -1,11 +1,9 @@
-import React from "react";
-import { Button, LinkButton } from "~/components/Button";
+import ArrowLeftIcon from "@heroicons/react/solid/ArrowLeftIcon";
+import DownloadIcon from "@heroicons/react/solid/DownloadIcon";
+import TrashIcon from "@heroicons/react/solid/TrashIcon";
+import { IconButton, LinkIconButton } from "~/components/Button";
 import { ScanHistory } from "~/components/ScanHistory";
 import { useStore } from "~/logic/store";
-
-function Show({ when, children }: React.PropsWithChildren<{ when: boolean }>) {
-  return when ? <>{children}</> : <div className="invisible">{children}</div>;
-}
 
 export function History() {
   const scan = useStore(state => state.scan);
@@ -13,36 +11,58 @@ export function History() {
 
   return (
     <div className="w-screen h-screen p-4 flex flex-col justify-between">
-      <Show when={hasHistory}>
+      {hasHistory ? (
         <ScanHistory
           className="overflow-y-scroll"
           entries={scan.history}
           onDeleteEntry={scan.delete}
         />
-      </Show>
+      ) : (
+        <p className="flex-auto flex justify-center items-center text-2xl text-stone-500">
+          No history entries yet.
+        </p>
+      )}
 
       <div className="flex flex-col space-y-3 mt-6">
         {hasHistory && (
           <>
-            <Button kind="danger" disabled={!hasHistory} onClick={scan.clear}>
+            <IconButton
+              kind="danger"
+              className="text-center"
+              icon={<TrashIcon className="w-5 h-5" aria-hidden />}
+              disabled={!hasHistory}
+              onClick={scan.clear}
+            >
               Clear history
-            </Button>
+            </IconButton>
 
             {hasHistory ? (
-              <LinkButton to="/export" kind="neutral">
+              <LinkIconButton
+                to="/export"
+                kind="neutral"
+                icon={<DownloadIcon className="w-5 h-5" aria-hidden />}
+              >
                 Export history
-              </LinkButton>
+              </LinkIconButton>
             ) : (
-              <Button kind="neutral" disabled={true}>
+              <IconButton
+                kind="neutral"
+                icon={<DownloadIcon className="w-5 h-5" aria-hidden />}
+                disabled={true}
+              >
                 Export history
-              </Button>
+              </IconButton>
             )}
           </>
         )}
 
-        <LinkButton to="/" kind="primary">
+        <LinkIconButton
+          to="/"
+          kind="primary"
+          icon={<ArrowLeftIcon className="w-5 h-5" aria-hidden />}
+        >
           Go back
-        </LinkButton>
+        </LinkIconButton>
       </div>
     </div>
   );

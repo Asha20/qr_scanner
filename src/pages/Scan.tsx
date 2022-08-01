@@ -26,7 +26,7 @@ function Overlay({ text, onScanAnother }: OverlayProps) {
       </p>
 
       <button
-        className="text-white bg-blue-400 px-8 py-4 rounded text-xl"
+        className="text-white bg-primary px-8 py-4 rounded text-xl"
         onClick={onScanAnother}
       >
         Scan another
@@ -64,7 +64,7 @@ function Controls({ torch, scanCount }: ControlsProps) {
         <ViewListIcon className="x-icon" aria-label="Open scan history" />
         {scanCount > 0 && (
           <span
-            className="w-5 h-5 grid bg-red-400 text-white rounded-full text-xs place-items-center absolute top-0 right-0 select-none"
+            className="w-5 h-5 grid bg-danger text-white rounded-full text-xs place-items-center absolute top-0 right-0 select-none"
             aria-label="Number of scans"
           >
             {scanCount}

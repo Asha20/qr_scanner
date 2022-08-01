@@ -14,7 +14,7 @@ export function ScanHistory({ entries, onDeleteEntry }: ScanHistoryProps) {
       {entries.map(({ created, value }) => (
         <li key={created} className="flex space-x-3">
           <button
-            className="bg-red-400 flex-none rounded-md p-3"
+            className="bg-danger flex-none rounded-md p-3"
             onClick={() => onDeleteEntry(created)}
           >
             <TrashIcon

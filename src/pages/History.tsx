@@ -18,7 +18,7 @@ export function History() {
 
       <div className="flex flex-col space-y-3">
         <button
-          className="text-white bg-red-400 px-8 py-2 rounded text-xl disabled:bg-red-200"
+          className="text-white bg-danger px-8 py-2 rounded text-xl disabled:bg-danger-disabled"
           disabled={scan.history.length === 0}
           onClick={scan.clear}
         >
@@ -27,7 +27,7 @@ export function History() {
 
         <Link
           to="/"
-          className="text-white bg-blue-400 px-8 py-2 rounded text-xl text-center"
+          className="text-white bg-primary px-8 py-2 rounded text-xl text-center"
         >
           Go back
         </Link>

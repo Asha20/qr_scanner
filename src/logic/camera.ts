@@ -23,7 +23,7 @@ export async function Camera(
     video: constraints,
   });
 
-  const supportsTorch = setTorch(false);
+  const supportsTorch = setTorch(constraints.torch ?? false);
 
   function setTorch(value: ConstrainBoolean): boolean {
     const track = mediaStream.getVideoTracks()[0];

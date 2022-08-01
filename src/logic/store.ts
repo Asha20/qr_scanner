@@ -1,13 +1,30 @@
+import produce from "immer";
 import create from "zustand";
 
-interface Store {
+interface State {
+  torch: boolean;
   scanHistory: string[];
   addScan(scan: string): void;
+  setTorch(torch: boolean): void;
 }
 
-export const useStore = create<Store>(set => ({
+export const useStore = create<State>(set => ({
+  torch: false,
   scanHistory: [],
-  addScan(scan: string) {
-    set(state => ({ scanHistory: [...state.scanHistory, scan] }));
+
+  addScan(scan) {
+    set(
+      produce((state: State) => {
+        state.scanHistory.push(scan);
+      }),
+    );
+  },
+
+  setTorch(torch) {
+    set(
+      produce((state: State) => {
+        state.torch = torch;
+      }),
+    );
   },
 }));

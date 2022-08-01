@@ -82,6 +82,7 @@ export function Scan() {
         facingMode: "environment",
         width: { min: 720, ideal: 1280 },
         height: { min: 480, ideal: 720 },
+        torch,
       }),
     x => {
       if (x.state === "resolved") {
@@ -90,17 +91,18 @@ export function Scan() {
     },
   );
 
-  const [torch, setTorch] = useState(false);
   const [text, setText] = useState("");
-  const scanHistory = useStore(state => state.scanHistory);
-  const addScan = useStore(state => state.addScan);
-
   function toggleTorch() {
     if (camera) {
       setTorch(!torch);
       camera.setTorch(!torch);
     }
   }
+  const [torch, setTorch] = useStore(state => [state.torch, state.setTorch]);
+  const [scanHistory, addScan] = useStore(state => [
+    state.scanHistory,
+    state.addScan,
+  ]);
 
   function onScan(result: ScanResult) {
     const newValue = result.success ? result.value : "";

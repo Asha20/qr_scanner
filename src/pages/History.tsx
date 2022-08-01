@@ -13,7 +13,7 @@ export function History() {
   return (
     <div className="w-screen h-screen p-4 flex flex-col justify-between">
       <Show when={scan.history.length > 0}>
-        <ScanHistory entries={scan.history} />
+        <ScanHistory entries={scan.history} onDeleteEntry={scan.delete} />
       </Show>
 
       <div className="flex flex-col space-y-3">

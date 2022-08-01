@@ -1,16 +1,12 @@
-import { Result } from "~/components/Result";
+import { ScanHistory } from "~/components/ScanHistory";
 import { useStore } from "~/logic/store";
 
 export function History() {
   const scanHistory = useStore(state => state.scanHistory);
 
   return (
-    <ul>
-      {scanHistory.map(scan => (
-        <li key={scan}>
-          <Result value={scan} />
-        </li>
-      ))}
-    </ul>
+    <div className="w-screen h-screen p-4">
+      <ScanHistory entries={scanHistory} />
+    </div>
   );
 }

@@ -7,7 +7,7 @@ export function Result({ value }: ResultProps) {
     return (
       <a
         href={value}
-        className="text-blue-500 underline"
+        className="text-blue-500 underline truncate block"
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -16,5 +16,5 @@ export function Result({ value }: ResultProps) {
     );
   }
 
-  return <>{value}</>;
+  return <span className="truncate block">{value}</span>;
 }

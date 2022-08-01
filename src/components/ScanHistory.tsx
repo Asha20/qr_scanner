@@ -29,8 +29,8 @@ export function ScanHistory({
           </button>
 
           <div className="truncate">
-            <Result value={value} />
-            <em className="text-stone-500 text-sm">
+            <Result className="text-white" value={value} />
+            <em className="text-stone-300 text-sm">
               at <DateTime timestamp={created} />
             </em>
           </div>

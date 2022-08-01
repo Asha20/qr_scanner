@@ -13,7 +13,7 @@ export function History() {
     <div className="w-screen h-screen p-4 flex flex-col justify-between">
       {hasHistory ? (
         <ScanHistory
-          className="overflow-y-scroll"
+          className="overflow-y-auto"
           entries={scan.history}
           onDeleteEntry={scan.delete}
         />

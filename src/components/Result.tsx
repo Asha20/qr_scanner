@@ -1,13 +1,14 @@
 export interface ResultProps {
+  className?: string;
   value: string;
 }
 
-export function Result({ value }: ResultProps) {
+export function Result({ className = "", value }: ResultProps) {
   if (value.startsWith("http")) {
     return (
       <a
         href={value}
-        className="text-blue-500 underline truncate block"
+        className={`text-blue-400 underline truncate block ${className}`}
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -16,5 +17,5 @@ export function Result({ value }: ResultProps) {
     );
   }
 
-  return <span className="truncate block">{value}</span>;
+  return <span className={`truncate block ${className}`}>{value}</span>;
 }

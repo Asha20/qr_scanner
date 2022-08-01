@@ -76,12 +76,18 @@ function Controls({ torch, scanCount }: ControlsProps) {
 }
 
 export function Scan() {
-  const { value: camera } = useAsyncConst(() =>
-    Camera({
-      facingMode: "environment",
-      width: { min: 720, ideal: 1280 },
-      height: { min: 480, ideal: 720 },
-    }),
+  const { value: camera } = useAsyncConst(
+    () =>
+      Camera({
+        facingMode: "environment",
+        width: { min: 720, ideal: 1280 },
+        height: { min: 480, ideal: 720 },
+      }),
+    x => {
+      if (x.state === "resolved") {
+        x.value.stop();
+      }
+    },
   );
 
   const [torch, setTorch] = useState(false);

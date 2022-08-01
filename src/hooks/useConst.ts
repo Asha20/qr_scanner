@@ -16,18 +16,36 @@ type MaybeAsync<T> =
   | { state: "resolved"; value: T }
   | { state: "rejected"; error: unknown };
 
-export function useAsyncConst<T>(fn: () => Promise<T>) {
+export function useAsyncConst<T>(
+  fn: () => Promise<T>,
+  cleanup: (x: MaybeAsync<T>) => void,
+) {
   const [state, setState] = useState<MaybeAsync<T>>({ state: "pending" });
   const cb = useRef(fn);
+  const cleanupRef = useRef(cleanup);
+  const promiseRef = useRef<Promise<void> | null>(null);
+  const stateRef = useRef<MaybeAsync<T>>({ state: "pending" });
 
   useEffect(() => {
-    cb.current()
-      .then(value => {
-        setState({ state: "resolved", value });
-      })
-      .catch(error => {
-        setState({ state: "rejected", error });
-      });
+    const cleanup = cleanupRef.current;
+
+    if (!promiseRef.current) {
+      stateRef.current = { state: "pending" };
+
+      promiseRef.current = cb
+        .current()
+        .then<MaybeAsync<T>, MaybeAsync<T>>(
+          value => ({ state: "resolved", value }),
+          error => ({ state: "rejected", error }),
+        )
+        .then(newState => {
+          setState(newState);
+          stateRef.current = newState;
+          promiseRef.current = null;
+        });
+    }
+
+    return () => cleanup(stateRef.current);
   }, [cb]);
 
   return {

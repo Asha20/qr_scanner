@@ -1,6 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { Button } from "~/components/Button";
+import { Button, LinkButton } from "~/components/Button";
 import { ScanHistory } from "~/components/ScanHistory";
 import { useStore } from "~/logic/store";
 
@@ -26,12 +25,9 @@ export function History() {
           Clear history
         </Button>
 
-        <Link
-          to="/"
-          className="text-white bg-primary px-8 py-2 rounded text-xl text-center"
-        >
+        <LinkButton to="/" kind="primary">
           Go back
-        </Link>
+        </LinkButton>
       </div>
     </div>
   );

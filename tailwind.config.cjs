@@ -11,6 +11,9 @@ module.exports = {
 
         danger: "#ef4444",
         "danger-disabled": "#fecaca",
+
+        neutral: "#f59e0b",
+        "neutral-disabled": "#fde68a",
       },
     },
   },

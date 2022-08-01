@@ -4,13 +4,18 @@ import { Result } from "~/components/Result";
 import { ScanEntry } from "~/logic/store";
 
 export interface ScanHistoryProps {
+  className?: string;
   entries: ScanEntry[];
   onDeleteEntry(timestamp: number): void;
 }
 
-export function ScanHistory({ entries, onDeleteEntry }: ScanHistoryProps) {
+export function ScanHistory({
+  className = "",
+  entries,
+  onDeleteEntry,
+}: ScanHistoryProps) {
   return (
-    <ol className="space-y-2">
+    <ol className={`space-y-2 ${className}`}>
       {entries.map(({ created, value }) => (
         <li key={created} className="flex space-x-3">
           <button
@@ -25,7 +30,7 @@ export function ScanHistory({ entries, onDeleteEntry }: ScanHistoryProps) {
 
           <div className="truncate">
             <Result value={value} />
-            <em>
+            <em className="text-stone-500 text-sm">
               at <DateTime timestamp={created} />
             </em>
           </div>

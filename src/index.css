@@ -5,18 +5,3 @@
 .x-icon {
   @apply w-12 h-12 p-2 text-white rounded-full bg-gray-800/50;
 }
-
-.x-table,
-.x-table thead,
-.x-table tbody {
-  @apply block;
-}
-
-.x-table tr {
-  @apply flex;
-}
-
-.x-table th,
-.x-table td {
-  @apply px-2 border-slate-300;
-}

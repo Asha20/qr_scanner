@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.x-icon {
+  @apply w-12 h-12 p-2 text-white rounded-full bg-gray-800/50;
+}

@@ -1,10 +1,15 @@
-import { LightningBoltIcon as LightningBoltIconOutline } from "@heroicons/react/outline";
+import {
+  LightningBoltIcon as LightningBoltIconOutline,
+  ViewListIcon,
+} from "@heroicons/react/outline";
 import { LightningBoltIcon as LightningBoltIconSolid } from "@heroicons/react/solid";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { QrScanner, ScanResult } from "~/components/QrScanner/index";
 import { Result } from "~/components/Result";
 import { useAsyncConst } from "~/hooks/useConst";
 import { Camera } from "~/logic/camera";
+import { useStore } from "~/logic/store";
 
 const SCAN_ATTEMPTS_PER_SECOND = 10;
 
@@ -31,26 +36,46 @@ function Overlay({ text, onScanAnother }: OverlayProps) {
 }
 
 interface ControlsProps {
+  scanCount: number;
   torch: { active: boolean; onChange(): void } | undefined;
 }
 
-function Controls({ torch }: ControlsProps) {
+function Controls({ torch, scanCount }: ControlsProps) {
   const LightningBoltIcon = torch?.active
     ? LightningBoltIconSolid
     : LightningBoltIconOutline;
 
   return (
-    <div className="controls absolute top-0 left-0 right-0 p-2">
+    <div
+      className={`absolute top-0 left-0 right-0 p-2 flex ${
+        torch ? "justify-between" : "justify-end"
+      }`}
+    >
       {torch && (
         <button onClick={torch.onChange}>
-          <LightningBoltIcon className="w-12 h-12 p-2 text-white rounded-full bg-gray-800/50" />
+          <LightningBoltIcon
+            className="x-icon"
+            aria-label={torch.active ? "Disable torch" : "Enable torch"}
+          />
         </button>
       )}
+
+      <Link to="/history" className="relative">
+        <ViewListIcon className="x-icon" aria-label="Open scan history" />
+        {scanCount > 0 && (
+          <span
+            className="w-5 h-5 grid bg-red-400 text-white rounded-full text-xs place-items-center absolute top-0 right-0 select-none"
+            aria-label="Number of scans"
+          >
+            {scanCount}
+          </span>
+        )}
+      </Link>
     </div>
   );
 }
 
-export function App() {
+export function Scan() {
   const { value: camera } = useAsyncConst(() =>
     Camera({
       facingMode: "environment",
@@ -61,6 +86,8 @@ export function App() {
 
   const [torch, setTorch] = useState(false);
   const [text, setText] = useState("");
+  const scanHistory = useStore(state => state.scanHistory);
+  const addScan = useStore(state => state.addScan);
 
   function toggleTorch() {
     if (camera) {
@@ -73,6 +100,7 @@ export function App() {
     const newValue = result.success ? result.value : "";
     if (newValue !== text) {
       setText(newValue);
+      addScan(newValue);
     }
   }
 
@@ -92,6 +120,7 @@ export function App() {
       {text && <Overlay text={text} onScanAnother={scanAnother} />}
 
       <Controls
+        scanCount={scanHistory.length}
         torch={
           camera?.supportsTorch
             ? { active: torch, onChange: toggleTorch }

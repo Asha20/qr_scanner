@@ -13,7 +13,9 @@
   "dependencies": {
     "@heroicons/react": "^1.0.6",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.3.0",
+    "zustand": "^4.0.0"
   },
   "devDependencies": {
     "@types/node": "^18.6.2",

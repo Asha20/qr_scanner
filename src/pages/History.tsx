@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { Button } from "~/components/Button";
 import { ScanHistory } from "~/components/ScanHistory";
 import { useStore } from "~/logic/store";
 
@@ -17,13 +18,13 @@ export function History() {
       </Show>
 
       <div className="flex flex-col space-y-3">
-        <button
-          className="text-white bg-danger px-8 py-2 rounded text-xl disabled:bg-danger-disabled"
+        <Button
+          kind="danger"
           disabled={scan.history.length === 0}
           onClick={scan.clear}
         >
           Clear history
-        </button>
+        </Button>
 
         <Link
           to="/"

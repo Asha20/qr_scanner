@@ -5,6 +5,7 @@ import {
 import { LightningBoltIcon as LightningBoltIconSolid } from "@heroicons/react/solid";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { Button } from "~/components/Button";
 import { QrScanner, ScanResult } from "~/components/QrScanner/index";
 import { Result } from "~/components/Result";
 import { useAsyncConst } from "~/hooks/useConst";
@@ -25,12 +26,9 @@ function Overlay({ text, onScanAnother }: OverlayProps) {
         <Result value={text} />
       </p>
 
-      <button
-        className="text-white bg-primary px-8 py-4 rounded text-xl"
-        onClick={onScanAnother}
-      >
+      <Button kind="primary" onClick={onScanAnother}>
         Scan another
-      </button>
+      </Button>
     </div>
   );
 }

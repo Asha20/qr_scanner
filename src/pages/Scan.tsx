@@ -3,7 +3,7 @@ import {
   ViewListIcon,
 } from "@heroicons/react/outline";
 import { LightningBoltIcon as LightningBoltIconSolid } from "@heroicons/react/solid";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { QrScanner, ScanResult } from "~/components/QrScanner/index";
 import { Result } from "~/components/Result";
@@ -92,12 +92,6 @@ export function Scan() {
   );
 
   const [text, setText] = useState("");
-  function toggleTorch() {
-    if (camera) {
-      setTorch(!torch);
-      camera.setTorch(!torch);
-    }
-  }
   const [torch, setTorch] = useStore(state => [state.torch, state.setTorch]);
   const [scanHistory, addScan] = useStore(state => [
     state.scanHistory,
@@ -108,13 +102,18 @@ export function Scan() {
     const newValue = result.success ? result.value : "";
     if (newValue !== text) {
       setText(newValue);
-      addScan(newValue);
     }
   }
 
-  function scanAnother() {
-    setText("");
-  }
+  useEffect(() => {
+    if (text !== "") {
+      addScan(text);
+    }
+  }, [text, addScan]);
+
+  useEffect(() => {
+    camera?.setTorch(torch);
+  }, [torch, camera]);
 
   return (
     <div className="w-screen h-screen bg-black overflow-hidden relative">
@@ -125,13 +124,13 @@ export function Scan() {
         media={camera?.mediaStream}
       />
 
-      {text && <Overlay text={text} onScanAnother={scanAnother} />}
+      {text && <Overlay text={text} onScanAnother={() => setText("")} />}
 
       <Controls
         scanCount={scanHistory.length}
         torch={
           camera?.supportsTorch
-            ? { active: torch, onChange: toggleTorch }
+            ? { active: torch, onChange: () => setTorch(!torch) }
             : undefined
         }
       />

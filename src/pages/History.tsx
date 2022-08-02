@@ -23,12 +23,12 @@ export function History() {
         </p>
       )}
 
-      <div className="flex flex-col space-y-3 mt-6">
+      <div className="flex flex-col sm:flex-row sm:justify-around space-y-3 sm:space-y-0 mt-6">
         {hasHistory && (
           <>
             <IconButton
               kind="danger"
-              className="text-center"
+              className="text-center sm:text-sm"
               icon={<TrashIcon className="w-5 h-5" aria-hidden />}
               disabled={!hasHistory}
               onClick={scan.clear}
@@ -40,6 +40,7 @@ export function History() {
               <LinkIconButton
                 to="/export"
                 kind="neutral"
+                className="sm:text-sm"
                 icon={<DownloadIcon className="w-5 h-5" aria-hidden />}
               >
                 Export history
@@ -47,6 +48,7 @@ export function History() {
             ) : (
               <IconButton
                 kind="neutral"
+                className="sm:text-sm"
                 icon={<DownloadIcon className="w-5 h-5" aria-hidden />}
                 disabled={true}
               >
@@ -59,6 +61,7 @@ export function History() {
         <LinkIconButton
           to="/"
           kind="primary"
+          className="sm:text-sm"
           icon={<ArrowLeftIcon className="w-5 h-5" aria-hidden />}
         >
           Go back

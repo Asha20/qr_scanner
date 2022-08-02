@@ -51,7 +51,7 @@ export function IconButton({
       {...props}
     >
       {icon}
-      <div className="flex-1">{children}</div>
+      <div className="ml-2 flex-1">{children}</div>
     </Button>
   );
 }
@@ -81,7 +81,7 @@ export function LinkIconButton({
       {...props}
     >
       {icon}
-      <div className="flex-1">{children}</div>
+      <div className="ml-2 flex-1">{children}</div>
     </LinkButton>
   );
 }

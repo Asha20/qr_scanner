@@ -1,6 +1,8 @@
+import ClipboardCopyIcon from "@heroicons/react/solid/ClipboardCopyIcon";
 import TrashIcon from "@heroicons/react/solid/TrashIcon";
 import { DateTime } from "~/components/DateTime";
 import { Result } from "~/components/Result";
+import { copyToClipboard } from "~/logic/clipboard";
 import { ScanEntry } from "~/logic/store";
 
 export interface ScanHistoryProps {
@@ -25,6 +27,16 @@ export function ScanHistory({
             <TrashIcon
               className="w-5 h-5 text-white"
               aria-label="Delete scan entry"
+            />
+          </button>
+
+          <button
+            className="bg-neutral flex-none rounded-md p-3"
+            onClick={() => copyToClipboard(value)}
+          >
+            <ClipboardCopyIcon
+              className="w-5 h-5 text-white"
+              aria-label="Copy entry to clipboard"
             />
           </button>
 

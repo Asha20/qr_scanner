@@ -1,7 +1,7 @@
 import LightningBoltIconOutline from "@heroicons/react/outline/LightningBoltIcon";
 import ViewListIcon from "@heroicons/react/outline/ViewListIcon";
 import LightningBoltIconSolid from "@heroicons/react/solid/LightningBoltIcon";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "~/components/Button";
 import { QrScanner, ScanResult } from "~/components/QrScanner/index";
@@ -14,10 +14,11 @@ const SCAN_ATTEMPTS_PER_SECOND = 10;
 
 interface OverlayProps {
   text: string;
+  duplicate: boolean;
   onDismiss(accept: boolean): void;
 }
 
-function Overlay({ text, onDismiss }: OverlayProps) {
+function Overlay({ text, duplicate, onDismiss }: OverlayProps) {
   return (
     <div className="absolute inset-0 p-8 flex flex-col justify-center items-center gap-4 bg-black/80 select-none">
       <p className="w-full truncate text-white text-center text-lg">
@@ -31,6 +32,12 @@ function Overlay({ text, onDismiss }: OverlayProps) {
       <Button kind="danger" className="w-full" onClick={() => onDismiss(false)}>
         Dismiss
       </Button>
+
+      {duplicate ? (
+        <p className="w-full text-stone-300 text-center text-lg">
+          Note: This entry is already present in your scan history.
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -119,6 +126,11 @@ export function Scan() {
     setText("");
   }
 
+  const duplicate = useMemo(
+    () => text !== "" && scanHistory.some(entry => entry.value === text),
+    [text, scanHistory],
+  );
+
   return (
     <div className="w-screen h-screen overflow-hidden relative">
       <QrScanner
@@ -133,7 +145,9 @@ export function Scan() {
         }}
       />
 
-      {text && <Overlay text={text} onDismiss={dismissOverlay} />}
+      {text && (
+        <Overlay text={text} duplicate={duplicate} onDismiss={dismissOverlay} />
+      )}
 
       <Controls
         scanCount={scanHistory.length}

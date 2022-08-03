@@ -54,7 +54,9 @@ declare module "~/vendor/zxing/zxing_reader" {
         width: number,
         height: number,
         tryHarder: boolean,
-        format: Format,
+        // Format may also be a comma delimited array of multiple formats.
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        format: Format | (string & {}),
       ): ScanResult;
 
       HEAPU8: {

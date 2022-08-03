@@ -7,7 +7,9 @@ export interface ProcessRequest {
   height: number;
 }
 
-export type ScanResult = { success: true; value: string } | { success: false };
+export type ScanResult =
+  | { success: true; format: string; value: string }
+  | { success: false };
 
 const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");

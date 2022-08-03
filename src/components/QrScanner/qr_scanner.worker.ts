@@ -53,8 +53,16 @@ function scan(zxing: ZXing.Instance, imageData: ImageData): ScanResult {
     "QR_CODE",
   );
 
-  if (result.format === "QRCode") {
-    return { success: true, value: result.text };
+  if (import.meta.env.DEV && result.error) {
+    return {
+      success: true,
+      format: result.format,
+      value: `Error: ${result.error}`,
+    };
+  }
+
+  if (result.format) {
+    return { success: true, format: result.format, value: result.text };
   }
 
   return { success: false };

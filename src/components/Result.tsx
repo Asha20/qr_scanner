@@ -4,10 +4,16 @@ export interface ResultProps {
 }
 
 export function Result({ className = "", value }: ResultProps) {
-  if (value.startsWith("http")) {
+  try {
+    const url = new URL(value);
+
+    if (url.protocol !== "http:" && url.protocol !== "https:") {
+      throw new TypeError();
+    }
+
     return (
       <a
-        href={value}
+        href={url.href}
         className={`text-blue-400 underline truncate block ${className}`}
         target="_blank"
         rel="noopener noreferrer"
@@ -15,7 +21,7 @@ export function Result({ className = "", value }: ResultProps) {
         {value}
       </a>
     );
+  } catch {
+    return <span className={`truncate block ${className}`}>{value}</span>;
   }
-
-  return <span className={`truncate block ${className}`}>{value}</span>;
 }

@@ -95,7 +95,7 @@ export const MediaStreamPlayer = forwardRef<
   const hideVideo = Boolean(statusMessage);
 
   return (
-    <div className={`w-full h-full ${hideVideo ? "bg-black" : ""}`}>
+    <div className="w-full h-full">
       {hideVideo && (
         <p className="flex items-center justify-center text-white h-full select-none">
           {statusMessage}

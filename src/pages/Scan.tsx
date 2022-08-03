@@ -115,7 +115,7 @@ export function Scan() {
   }, [torch, camera]);
 
   return (
-    <div className="w-screen h-screen bg-black overflow-hidden relative">
+    <div className="w-screen h-screen overflow-hidden relative">
       <QrScanner
         scan={text === ""}
         onScan={onScan}

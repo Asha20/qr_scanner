@@ -1,5 +1,8 @@
 import { useRef } from "react";
-import { MediaStreamPlayer } from "~/components/MediaStreamPlayer";
+import {
+  MediaStreamPlayer,
+  MediaStreamPlayerProps,
+} from "~/components/MediaStreamPlayer";
 import { useInterval } from "~/hooks/useInterval";
 import * as xQrScanner from "./qr_scanner";
 
@@ -8,6 +11,7 @@ export interface QrScannerProps {
   media: MediaStream | undefined;
   scan: boolean;
   attemptsPerSecond: number;
+  messages: MediaStreamPlayerProps["messages"];
   onScan(result: xQrScanner.ScanResult): void;
 }
 
@@ -16,6 +20,7 @@ export function QrScanner({
   media,
   scan,
   attemptsPerSecond,
+  messages,
   onScan,
 }: QrScannerProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -35,6 +40,11 @@ export function QrScanner({
   useInterval(attemptScan, scan ? 1000 / attemptsPerSecond : null);
 
   return (
-    <MediaStreamPlayer active={showVideo} ref={videoRef} mediaStream={media} />
+    <MediaStreamPlayer
+      messages={messages}
+      active={showVideo}
+      ref={videoRef}
+      mediaStream={media}
+    />
   );
 }

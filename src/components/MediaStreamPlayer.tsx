@@ -11,6 +11,11 @@ import * as logger from "~/util/logger";
 export interface MediaStreamPlayerProps {
   active?: boolean;
   mediaStream: MediaStream | undefined;
+  messages: {
+    noMedia: string;
+    notPlaying: string;
+    inactive: string;
+  };
 }
 
 type VideoState = "none" | "loading" | "playing";
@@ -18,7 +23,7 @@ type VideoState = "none" | "loading" | "playing";
 export const MediaStreamPlayer = forwardRef<
   HTMLVideoElement,
   MediaStreamPlayerProps
->(({ active = true, mediaStream }, ref) => {
+>(({ active = true, mediaStream, messages }, ref) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [playing, setPlaying] = useState(false);
   const state = useRef<VideoState>("none");
@@ -72,13 +77,28 @@ export const MediaStreamPlayer = forwardRef<
     };
   }, [mediaStream]);
 
-  const hideVideo = !active || !playing || Boolean(!mediaStream);
+  function displayStatusMessage() {
+    if (!mediaStream) {
+      return messages.noMedia;
+    }
+    if (!playing) {
+      return messages.notPlaying;
+    }
+    if (!active) {
+      return messages.inactive;
+    }
+
+    return "";
+  }
+
+  const statusMessage = displayStatusMessage();
+  const hideVideo = Boolean(statusMessage);
 
   return (
     <div className={`w-full h-full ${hideVideo ? "bg-black" : ""}`}>
-      {hideVideo && active && (
+      {hideVideo && (
         <p className="flex items-center justify-center text-white h-full select-none">
-          {!mediaStream ? "No media stream." : "Not playing."}
+          {statusMessage}
         </p>
       )}
 

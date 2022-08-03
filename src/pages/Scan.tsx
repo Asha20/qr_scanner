@@ -121,6 +121,11 @@ export function Scan() {
         onScan={onScan}
         attemptsPerSecond={SCAN_ATTEMPTS_PER_SECOND}
         media={camera?.mediaStream}
+        messages={{
+          noMedia: "Camera access permission is required.",
+          notPlaying: "Loading...",
+          inactive: "Camera feed is paused.",
+        }}
       />
 
       {text && <Overlay text={text} onScanAnother={() => setText("")} />}

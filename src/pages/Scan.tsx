@@ -14,18 +14,22 @@ const SCAN_ATTEMPTS_PER_SECOND = 10;
 
 interface OverlayProps {
   text: string;
-  onScanAnother(): void;
+  onDismiss(accept: boolean): void;
 }
 
-function Overlay({ text, onScanAnother }: OverlayProps) {
+function Overlay({ text, onDismiss }: OverlayProps) {
   return (
-    <div className="absolute inset-0 p-8 flex flex-col justify-end items-center gap-4 bg-black/80 select-none">
+    <div className="absolute inset-0 p-8 flex flex-col justify-center items-center gap-4 bg-black/80 select-none">
       <p className="w-full truncate text-white text-center text-lg">
         <Result value={text} />
       </p>
 
-      <Button kind="primary" onClick={onScanAnother}>
-        Scan another
+      <Button kind="primary" className="w-full" onClick={() => onDismiss(true)}>
+        Save to history
+      </Button>
+
+      <Button kind="danger" className="w-full" onClick={() => onDismiss(false)}>
+        Dismiss
       </Button>
     </div>
   );
@@ -105,14 +109,15 @@ export function Scan() {
   }
 
   useEffect(() => {
-    if (text !== "") {
-      addScan(text);
-    }
-  }, [text, addScan]);
-
-  useEffect(() => {
     camera?.setTorch(torch);
   }, [torch, camera]);
+
+  function dismissOverlay(saveEntry: boolean) {
+    if (saveEntry) {
+      addScan(text);
+    }
+    setText("");
+  }
 
   return (
     <div className="w-screen h-screen overflow-hidden relative">
@@ -128,7 +133,7 @@ export function Scan() {
         }}
       />
 
-      {text && <Overlay text={text} onScanAnother={() => setText("")} />}
+      {text && <Overlay text={text} onDismiss={dismissOverlay} />}
 
       <Controls
         scanCount={scanHistory.length}
